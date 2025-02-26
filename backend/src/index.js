@@ -5,4 +5,4 @@ import {PORT} from './config.js'
 //INDEX ARRANCA EL SERVIDOR
 
 app.listen(PORT)
-console.log(`Server running on http://locahost:${PORT}`)
+console.log(`Server running on http://localhost:${PORT}`)
