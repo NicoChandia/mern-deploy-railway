@@ -6,52 +6,80 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 function App() {
   // Estado para almacenar la lista de productos
   const [products, setProducts] = useState([])
+  // Estado para manejar el producto en edición
+  const [editingProduct, setEditingProduct] = useState(null)
 
   // Efecto secundario para cargar productos al montar el componente
   useEffect(() => {
-    fetch(`${BACKEND_URL}/products`)
-      .then(response => response.json())
-      .then(data => setProducts(data))
-      .catch(error => console.error('Error cargando productos:', error));
-  }, []); // El array vacío asegura que se ejecute solo al montar el componente
+    fetchProducts()
+  }, []) // El array vacío asegura que se ejecute solo al montar el componente
 
-  // Función para manejar el envío del formulario de nuevo producto
+  // Función reusable para obtener productos
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/products`)
+      const data = await response.json()
+      setProducts(data)
+    } catch (error) {
+      console.error('Error cargando productos:', error)
+    }
+  }
+
+  // Función para manejar el envío del formulario (creación y actualización)
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // Crear objeto FormData para obtener los valores del formulario
     const formData = new FormData(e.target)
     const productData = Object.fromEntries(formData)
-
+    
     try {
-      // Enviar solicitud POST al backend
-      const res = await fetch(`${BACKEND_URL}/products`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productData)
-      })
-      
-      // Agregar nuevo producto al estado de forma optimista
-      const newProduct = await res.json()
-      setProducts([...products, newProduct])
-      
-      // Resetear el formulario después de enviar
-      e.target.reset()
+      if (editingProduct) {
+        // Lógica para actualizar producto existente
+        const response = await fetch(`${BACKEND_URL}/products/${editingProduct._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...productData,
+            price: parseFloat(productData.price) // Asegurar tipo numérico
+          })
+        })
+        const updatedProduct = await response.json()
+        // Actualizar lista de productos con el producto modificado
+        setProducts(products.map(p => p._id === updatedProduct._id ? updatedProduct : p))
+        setEditingProduct(null) // Limpiar estado de edición
+      } else {
+        // Lógica para crear nuevo producto
+        const response = await fetch(`${BACKEND_URL}/products`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData)
+        })
+        const newProduct = await response.json()
+        setProducts([...products, newProduct]) // Agregar nuevo producto al estado
+      }
+      e.target.reset() // Resetear formulario después de la operación
     } catch (error) {
-      console.error('Error agregando producto:', error)
+      console.error('Error en la operación:', error)
     }
+  }
+
+  // Función para manejar la edición de un producto
+  const handleEdit = (product) => {
+    setEditingProduct(product) // Establecer producto a editar
+    // Rellenar formulario con los datos del producto
+    document.getElementById('name').value = product.name
+    document.getElementById('price').value = product.price
+    document.getElementById('description').value = product.description
   }
 
   // Función para eliminar un producto
   const handleDelete = async (productId) => {
     try {
-      // Enviar solicitud DELETE al backend
       const response = await fetch(`${BACKEND_URL}/products/${productId}`, {
         method: 'DELETE'
       })
       
-      // Si la respuesta es exitosa, actualizar el estado
       if (response.ok) {
-        // Filtrar los productos eliminando el correspondiente
+        // Filtrar productos removiendo el eliminado
         setProducts(products.filter(product => product._id !== productId))
       } else {
         console.error('Error eliminando producto:', response.statusText)
@@ -68,7 +96,7 @@ function App() {
         <h1>Catálogo de Productos</h1>
       </header>
 
-      {/* Sección del formulario de agregar productos */}
+      {/* Sección del formulario de agregar/editar productos */}
       <section className="form-section">
         <form onSubmit={handleSubmit} className="product-form">
           {/* Grupo de entrada para el nombre del producto */}
@@ -109,10 +137,25 @@ function App() {
             />
           </div>
 
-          {/* Botón de envío del formulario */}
-          <button type="submit" className="submit-btn">
-            Agregar Producto
-          </button>
+          {/* Contenedor de botones del formulario */}
+          <div className="form-buttons">
+            <button type="submit" className="submit-btn">
+              {editingProduct ? 'Actualizar Producto' : 'Agregar Producto'}
+            </button>
+            {/* Mostrar botón de cancelar solo en modo edición */}
+            {editingProduct && (
+              <button 
+                type="button" 
+                className="cancel-btn"
+                onClick={() => {
+                  setEditingProduct(null) // Limpiar estado de edición
+                  document.querySelector('form').reset() // Resetear formulario
+                }}
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
         </form>
       </section>
 
@@ -122,17 +165,27 @@ function App() {
           {products.map((product) => (
             // Tarjeta individual para cada producto
             <article key={product._id} className="product-card">
-              {/* Encabezado de la tarjeta con botón de eliminar */}
               <div className="card-header">
                 <h2>{product.name}</h2>
-                {/* Botón para eliminar el producto */}
-                <button 
-                  onClick={() => handleDelete(product._id)}
-                  className="delete-btn"
-                  aria-label="Eliminar producto"
-                >
-                  × {/* Símbolo de multiplicación como icono */}
-                </button>
+                {/* Contenedor de acciones de la tarjeta */}
+                <div className="card-actions">
+                  {/* Botón de editar producto */}
+                  <button 
+                    onClick={() => handleEdit(product)}
+                    className="edit-btn"
+                    aria-label="Editar producto"
+                  >
+                    ✏️
+                  </button>
+                  {/* Botón de eliminar producto */}
+                  <button 
+                    onClick={() => handleDelete(product._id)}
+                    className="delete-btn"
+                    aria-label="Eliminar producto"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
               
               {/* Detalles del producto */}

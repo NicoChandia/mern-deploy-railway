@@ -84,4 +84,43 @@ app.delete('/products/:id', async (req, res) => {
     }
 })
 
+// Ruta PUT para actualizar un producto existente
+app.put('/products/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, price, description } = req.body;
+
+        // Validación básica
+        if (!name || !price || !description) {
+            return res.status(400).json({ message: 'Faltan campos obligatorios' });
+        }
+
+        // Buscar y actualizar el producto
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            { 
+                name, 
+                price: parseFloat(price),
+                description 
+            },
+            { new: true } // Devuelve el documento actualizado
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+
+        res.status(200).json({
+            message: 'Producto actualizado correctamente',
+            updatedProduct
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error al actualizar el producto',
+            error: error.message
+        });
+    }
+});
+
 export default app

@@ -179,3 +179,57 @@ body {
     padding: 1.5rem; /* Menos padding en móviles */
   }
 }
+
+
+
+/* Contenedor de botones dentro de un formulario */
+.form-buttons {
+  display: flex; /* Usa flexbox para organizar los botones en línea */
+  gap: 1rem; /* Espaciado entre los botones */
+  margin-top: 1.5rem; /* Margen superior para separar del contenido anterior */
+}
+
+/* Estilos para el botón de cancelar */
+.cancel-btn {
+  background: #95a5a6 !important; /* Color de fondo gris */
+  padding: 1rem 2rem; /* Espaciado interno (arriba/abajo: 1rem, izquierda/derecha: 2rem) */
+  border: none; /* Elimina el borde */
+  border-radius: 5px; /* Bordes redondeados */
+  font-weight: bold; /* Texto en negrita */
+  cursor: pointer; /* Cambia el cursor a una mano al pasar el mouse */
+  transition: all 0.3s ease; /* Transición suave en todos los cambios */
+}
+
+/* Cambio de color al pasar el mouse sobre el botón de cancelar */
+.cancel-btn:hover {
+  background: #7f8c8d !important; /* Color de fondo más oscuro */
+}
+
+/* Contenedor de botones de acción dentro de una tarjeta */
+.card-actions {
+  display: flex; /* Usa flexbox para alinear los botones */
+  gap: 0.5rem; /* Espaciado entre los botones */
+}
+
+/* Estilos para el botón de edición */
+.edit-btn {
+  background: #3498db !important; /* Color azul de fondo */
+  color: white !important; /* Texto en color blanco */
+  border: none; /* Sin borde */
+  border-radius: 50%; /* Forma circular */
+  width: 28px; /* Ancho del botón */
+  height: 28px; /* Alto del botón */
+  font-size: 1.2rem; /* Tamaño del texto */
+  cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+  transition: all 0.3s ease; /* Transición suave en todos los cambios */
+  display: flex; /* Usa flexbox para centrar el contenido */
+  align-items: center; /* Centra el contenido verticalmente */
+  justify-content: center; /* Centra el contenido horizontalmente */
+  padding: 0; /* Elimina el padding interno */
+}
+
+/* Efecto al pasar el mouse sobre el botón de edición */
+.edit-btn:hover {
+  background: #2980b9 !important; /* Color de fondo más oscuro */
+  transform: rotate(15deg); /* Gira el botón 15 grados */
+}
