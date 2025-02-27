@@ -1,4 +1,181 @@
-body{
-  background: #101010;
+/* Estilos base de la aplicación */
+body {
+  background: #1a1a1a; /* Fondo oscuro principal */
+  color: #ffffff; /* Texto blanco principal */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6; /* Interlineado para mejor lectura */
+  margin: 0;
+  padding: 20px;
+}
+
+/* Contenedor principal centrado con ancho máximo */
+.app-container {
+  max-width: 1200px; /* Ancho máximo del contenido */
+  margin: 0 auto; /* Centrado horizontal */
+}
+
+/* Estilos del encabezado principal */
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem 0;
+  border-bottom: 2px solid #2ecc71; /* Línea decorativa inferior en verde */
+}
+
+.app-header h1 {
+  color: #2ecc71; /* Color verde para el título principal */
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+/* Estilos del formulario de productos */
+.product-form {
+  background: #2d2d2d; /* Fondo oscuro para el formulario */
+  padding: 2rem;
+  border-radius: 10px; /* Bordes redondeados */
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Sombra suave */
+}
+
+/* Grupo de elementos del formulario */
+.form-group {
+  margin-bottom: 1.5rem; /* Espaciado entre grupos */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2ecc71; /* Color verde para las etiquetas */
+  font-weight: 600; /* Grosor de fuente para mejor legibilidad */
+}
+
+/* Campos de entrada del formulario */
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #404040; /* Borde sutil */
+  border-radius: 5px; /* Bordes ligeramente redondeados */
+  background: #333; /* Fondo oscuro para los inputs */
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease; /* Transición suave para efectos */
+}
+
+/* Efectos al enfocar los campos de entrada */
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none; /* Eliminar contorno por defecto */
+  border-color: #2ecc71; /* Borde verde al enfocar */
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2); /* Sombra de enfoque sutil */
+}
+
+/* Estilos del botón de enviar formulario */
+.submit-btn {
+  background: #2ecc71; /* Fondo verde */
   color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  transition: transform 0.2s, background 0.3s; /* Transiciones combinadas */
+}
+
+.submit-btn:hover {
+  background: #27ae60; /* Verde más oscuro al hover */
+  transform: translateY(-2px); /* Efecto de elevación */
+}
+
+/* Grid responsivo para los productos */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Columnas adaptables */
+  gap: 1.5rem; /* Espaciado entre tarjetas */
+  padding: 1rem 0;
+}
+
+/* Tarjeta individual de producto */
+.product-card {
+  background: #2d2d2d;
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transiciones suaves */
+}
+
+.product-card:hover {
+  transform: translateY(-5px); /* Efecto de elevación al hover */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+}
+
+/* Encabezado de la tarjeta con botón de eliminar */
+.card-header {
+  display: flex;
+  justify-content: space-between; /* Alineación horizontal */
+  align-items: center; /* Alineación vertical */
+  margin-bottom: 1rem;
+}
+
+/* Estilos del título del producto */
+.product-card h2 {
+  color: #2ecc71;
+  margin: 0;
+  font-size: 1.3rem;
+  max-width: calc(100% - 40px); /* Previene solapamiento con botón */
+}
+
+/* Estilos del precio del producto */
+.product-price {
+  color: #2ecc71;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+/* Estilos de la descripción del producto */
+.product-description {
+  color: #b3b3b3; /* Color gris claro para texto secundario */
+  font-size: 0.95rem;
+  line-height: 1.4; /* Mejor legibilidad para texto largo */
+}
+
+/* Botón de eliminar producto */
+.delete-btn {
+  background: #e74c3c !important; /* Rojo intenso para acción destructiva */
+  color: white !important;
+  border: none;
+  border-radius: 50%; /* Forma circular */
+  width: 28px;
+  height: 28px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Transición suave */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-left: 10px; /* Espaciado del título */
+}
+
+/* Efectos hover para el botón de eliminar */
+.delete-btn:hover {
+  background: #c0392b !important; /* Rojo más oscuro al hover */
+  transform: rotate(90deg) scale(1.1); /* Efecto de giro y escala */
+}
+
+/* Media queries para diseño responsivo */
+@media (max-width: 768px) {
+  body {
+    padding: 10px; /* Menos padding en móviles */
+  }
+
+  .app-header h1 {
+    font-size: 2rem; /* Tamaño menor para móviles */
+  }
+
+  .product-form {
+    padding: 1.5rem; /* Menos padding en móviles */
+  }
 }
