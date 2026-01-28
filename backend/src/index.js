@@ -1,8 +1,19 @@
-import "./db.js"
+// backend/src/index.js
+import mongoose from 'mongoose'
 import app from './app.js'
-import {PORT} from './config.js'
+import { PORT, MONGODB_URI } from './config.js'
 
-//INDEX ARRANCA EL SERVIDOR
-
-app.listen(PORT)
-console.log(`Server running on http://localhost:${PORT}`)
+// Conectar a MongoDB primero
+mongoose.connect(MONGODB_URI)
+    .then(() => {
+        console.log('✅ DB is connected')
+        
+        // Iniciar servidor solo después de conectar a DB
+        app.listen(PORT, () => {
+            console.log(`✅ Server running on port ${PORT}`)
+        })
+    })
+    .catch((error) => {
+        console.error('❌ Error connecting to MongoDB:', error)
+        process.exit(1)
+    })

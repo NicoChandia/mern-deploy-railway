@@ -13,10 +13,11 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'El precio es obligatorio'],
         min: [0.01, 'El precio debe ser mayor a 0'],
-        // ✅ Setter simplificado y seguro
-        get: v => v ? Math.round(v * 100) / 100 : v,
-        set: v => v ? Math.round(parseFloat(v) * 100) / 100 : v
-    },
+        get: v => typeof v === 'number' ? Math.round(v * 100) / 100 : v,
+        set: v => typeof v === 'number'
+        ? Math.round(v * 100) / 100
+        : Math.round(parseFloat(v) * 100) / 100
+},
     description: {
         type: String,
         required: [true, 'La descripción es obligatoria'],
