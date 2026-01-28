@@ -24,7 +24,6 @@ function App() {
     e.preventDefault();
     const formData = new FormData(e.target);
     
-    // 1. Aseguramos que los datos extraídos del form sean del tipo correcto
     const productData = {
       name: formData.get('name'),
       price: parseFloat(formData.get('price')),
@@ -32,32 +31,39 @@ function App() {
     };
 
     try {
+      const url = editingProduct 
+        ? `${BACKEND_URL}/products/${editingProduct._id}` 
+        : `${BACKEND_URL}/products`;
+      
+      const response = await fetch(url, {
+        method: editingProduct ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData)
+      });
+
+      // --- CAMBIO CLAVE: Validar si la respuesta fue exitosa ---
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert(`Error del servidor: ${response.status}. Revisa que la descripción tenga al menos 10 caracteres.`);
+        return; // Detenemos la ejecución para no crear tarjetas vacías
+      }
+
+      const savedProduct = await response.json();
+
       if (editingProduct) {
-        const response = await fetch(`${BACKEND_URL}/products/${editingProduct._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productData)
-        });
-        
-        const updatedProduct = await response.json();
-        setProducts(products.map(p => p._id === editingProduct._id ? updatedProduct : p));
+        setProducts(products.map(p => p._id === editingProduct._id ? savedProduct : p));
         setEditingProduct(null);
       } else {
-        const response = await fetch(`${BACKEND_URL}/products`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productData)
-        });
-        const newProduct = await response.json();
-        setProducts([...products, newProduct]);
+        setProducts([...products, savedProduct]);
       }
+      
       e.target.reset();
     } catch (error) {
       console.error('Error en la operación:', error);
+      alert('Hubo un error de conexión con el servidor.');
     }
   };
 
-  // 2. FUNCIÓN CORREGIDA: Ya no usamos document.getElementById
   const handleEdit = (product) => {
     setEditingProduct(product);
   }
@@ -85,7 +91,6 @@ function App() {
         <form onSubmit={handleSubmit} className="product-form">
           <div className="form-group">
             <label htmlFor="name">Nombre del producto:</label>
-            {/* 3. INPUT CORREGIDO: key y defaultValue vinculados al estado */}
             <input 
               key={editingProduct ? `edit-name-${editingProduct._id}` : 'new-name'}
               type="text" 
@@ -106,7 +111,7 @@ function App() {
               name="price"
               defaultValue={editingProduct ? editingProduct.price : ''}
               placeholder="Ej: 999.99"
-              min="0"
+              min="0.01"
               step="0.01"
               required
             />
@@ -119,8 +124,9 @@ function App() {
               id="description"
               name="description"
               defaultValue={editingProduct ? editingProduct.description : ''}
-              placeholder="Descripción detallada del producto..."
+              placeholder="Mínimo 10 caracteres..."
               rows="3"
+              minLength="10" // <-- ESTO EVITA EL ERROR 500 EN EL BACKEND
               required
             />
           </div>
@@ -133,7 +139,10 @@ function App() {
               <button 
                 type="button" 
                 className="cancel-btn"
-                onClick={() => setEditingProduct(null)}
+                onClick={() => {
+                  setEditingProduct(null);
+                  document.querySelector('.product-form').reset();
+                }}
               >
                 Cancelar
               </button>
