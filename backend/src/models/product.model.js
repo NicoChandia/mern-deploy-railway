@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'El precio es obligatorio'],
         min: [0.01, 'El precio debe ser mayor a 0'], // Valor mínimo
-        set: value => parseFloat(value).toFixed(2) // Guardar siempre con 2 decimales
+        set: value => Math.round(parseFloat(value) * 100) / 100 // Redondea a 2 decimales, mantiene numero
     },
     description: {
         type: String,
