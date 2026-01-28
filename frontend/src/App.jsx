@@ -190,9 +190,12 @@ function App() {
               
               {/* Detalles del producto */}
               <div className="product-details">
-                <p className="product-price">${product.price.toFixed(2)}</p>
+                <p className="product-price">
+                  ${Number(product.price ?? 0).toFixed(2)}
+                </p>
                 <p className="product-description">{product.description}</p>
               </div>
+
             </article>
           ))}
         </div>
