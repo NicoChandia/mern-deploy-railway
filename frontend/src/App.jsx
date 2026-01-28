@@ -27,41 +27,45 @@ function App() {
 
   // Función para manejar el envío del formulario (creación y actualización)
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const formData = new FormData(e.target)
-    const productData = Object.fromEntries(formData)
-    
-    try {
-      if (editingProduct) {
-        // Lógica para actualizar producto existente
-        const response = await fetch(`${BACKEND_URL}/products/${editingProduct._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...productData,
-            price: parseFloat(productData.price) // Asegurar tipo numérico
-          })
-        })
-        const updatedProduct = await response.json()
-        // Actualizar lista de productos con el producto modificado
-        setProducts(products.map(p => p._id === updatedProduct._id ? updatedProduct : p))
-        setEditingProduct(null) // Limpiar estado de edición
-      } else {
-        // Lógica para crear nuevo producto
-        const response = await fetch(`${BACKEND_URL}/products`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productData)
-        })
-        const newProduct = await response.json()
-        setProducts([...products, newProduct]) // Agregar nuevo producto al estado
-      }
-      e.target.reset() // Resetear formulario después de la operación
-    } catch (error) {
-      console.error('Error en la operación:', error)
-    }
-  }
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  
+  // Creamos el objeto y nos aseguramos de que los tipos de datos sean correctos
+  const productData = {
+    name: formData.get('name'),
+    price: parseFloat(formData.get('price')),
+    description: formData.get('description')
+  };
 
+  try {
+    if (editingProduct) {
+      const response = await fetch(`${BACKEND_URL}/products/${editingProduct._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData) // Ya va con el precio como número
+      });
+      
+      const updatedProduct = await response.json();
+      
+      // IMPORTANTE: Si el backend devuelve un error o algo distinto,
+      // asegúrate de que updatedProduct tenga los datos correctos.
+      setProducts(products.map(p => p._id === editingProduct._id ? updatedProduct : p));
+      setEditingProduct(null);
+    } else {
+      // Lógica de POST (Agregar nuevo)
+      const response = await fetch(`${BACKEND_URL}/products`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData)
+      });
+      const newProduct = await response.json();
+      setProducts([...products, newProduct]);
+    }
+    e.target.reset();
+  } catch (error) {
+    console.error('Error en la operación:', error);
+  }
+};
   // Función para manejar la edición de un producto
   const handleEdit = (product) => {
     setEditingProduct(product) // Establecer producto a editar
